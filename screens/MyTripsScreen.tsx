@@ -1,17 +1,28 @@
+
 import React, { useState } from 'react';
 import { RECOMMENDED_DESTINATIONS } from '../constants';
+import { Destination } from '../types';
 
 interface MyTripsScreenProps {
   onCreateTrip: () => void;
   onItineraryClick?: () => void;
   onChatClick?: () => void;
   onNotificationClick: () => void;
+  onUpcomingTripClick: (trip: Destination) => void;
   profileImage?: string | null;
+  bookedTrips: Destination[];
 }
 
-const MyTripsScreen: React.FC<MyTripsScreenProps> = ({ onCreateTrip, onItineraryClick, onChatClick, onNotificationClick, profileImage }) => {
+const MyTripsScreen: React.FC<MyTripsScreenProps> = ({ 
+  onCreateTrip, 
+  onItineraryClick, 
+  onChatClick, 
+  onNotificationClick, 
+  onUpcomingTripClick,
+  profileImage,
+  bookedTrips 
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const defaultImage = "https://i.pravatar.cc/150?u=alex_rivera";
 
   const isButtonDisabled = searchQuery.trim().length === 0;
 
@@ -20,10 +31,16 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({ onCreateTrip, onItinerary
       {/* Header */}
       <header className="sticky top-0 z-30 bg-background-light/90 backdrop-blur-md px-6 pt-10 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div 
-            className="size-11 rounded-full bg-cover bg-center border-2 border-white shadow-sm" 
-            style={{ backgroundImage: `url('${profileImage || defaultImage}')` }}
-          ></div>
+          <div className="size-11 rounded-full border-2 border-white bg-slate-100 shadow-sm flex items-center justify-center overflow-hidden">
+            {profileImage ? (
+              <div 
+                className="w-full h-full bg-cover bg-center" 
+                style={{ backgroundImage: `url('${profileImage}')` }}
+              ></div>
+            ) : (
+              <span className="material-symbols-outlined text-slate-300 text-[24px] filled-icon">person</span>
+            )}
+          </div>
           <div className="flex flex-col">
             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Welcome back</p>
             <h1 className="text-lg font-black text-slate-gray leading-none">Alex Rivera</h1>
@@ -149,6 +166,46 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({ onCreateTrip, onItinerary
             </div>
           </div>
         </section>
+
+        {/* Upcoming Trips Section */}
+        {bookedTrips.length > 0 && (
+          <section className="mt-10">
+            <div className="flex items-center justify-between px-8 mb-5">
+              <h2 className="text-xl font-black text-slate-gray tracking-tight">Upcoming Trips</h2>
+              <span className="text-primary text-[10px] font-black uppercase tracking-widest">{bookedTrips.length} Booked</span>
+            </div>
+            <div className="flex gap-5 overflow-x-auto no-scrollbar px-6 pb-4">
+              {bookedTrips.map((trip) => (
+                <div 
+                  key={trip.id}
+                  onClick={() => onUpcomingTripClick(trip)}
+                  className="min-w-[280px] bg-white rounded-[32px] overflow-hidden shadow-md border border-slate-50 active:scale-[0.98] transition-all group"
+                >
+                  <div className="relative h-44 overflow-hidden">
+                    <img 
+                      src={trip.imageUrl} 
+                      alt={trip.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute top-4 left-4 bg-primary text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest shadow-lg">
+                      Confirmed
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-base font-black text-slate-gray truncate">{trip.name}</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">{trip.country} • {trip.days} Days</p>
+                    <div className="mt-4 flex items-center justify-between pt-4 border-t border-slate-50">
+                      <div className="flex -space-x-2">
+                         {[1,2,3].map(i => <div key={i} className="size-7 rounded-full border-2 border-white bg-slate-100 bg-cover" style={{backgroundImage: `url('https://i.pravatar.cc/100?u=u${i}')`}}></div>)}
+                      </div>
+                      <span className="text-primary font-black text-sm">View Summary</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Explore More Trips Section */}
         <section className="mt-12">

@@ -69,15 +69,6 @@ const VibeMatchResultsScreen: React.FC<VibeMatchResultsScreenProps> = ({
               >
                 Got it
               </button>
-              
-              {isProfileIncomplete && onCompleteProfile && (
-                <button 
-                  onClick={onCompleteProfile}
-                  className="w-full h-16 bg-white text-slate-900 border-2 border-slate-100 font-black rounded-[24px] active:scale-[0.97] transition-all text-lg"
-                >
-                  Complete Profile
-                </button>
-              )}
             </div>
           </div>
         </div>

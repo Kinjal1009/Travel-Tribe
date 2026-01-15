@@ -1,3 +1,4 @@
+
 import { Destination, TrendingSpot } from './types';
 
 export const COLORS = {
@@ -34,18 +35,18 @@ export const RECOMMENDED_DESTINATIONS: Destination[] = [
   },
   {
     id: 'ind-3',
-    name: 'Varanasi Spiritual',
+    name: 'Varanasi Ghats',
     country: 'India',
     days: 3,
     matchScore: 88,
     imageUrl: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=800',
     price: 8500,
     groupSize: 15,
-    category: 'Zen'
+    category: 'Spiritual'
   },
   {
     id: 'ind-4',
-    name: 'Ladakh High Passes',
+    name: 'Leh Ladakh Expedition',
     country: 'India',
     days: 8,
     matchScore: 94,
@@ -58,7 +59,7 @@ export const RECOMMENDED_DESTINATIONS: Destination[] = [
 
 export const TRENDING_SPOTS: TrendingSpot[] = [
   { id: 'it1', name: 'Manali', imageUrl: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=400' },
-  { id: 'it2', name: 'Hampi', imageUrl: 'https://images.unsplash.com/photo-1620619767323-b95a89183081?auto=format&fit=crop&q=80&w=800' },
-  { id: 'it3', name: 'Goa', imageUrl: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=400' },
-  { id: 'it4', name: 'Munnar', imageUrl: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&q=80&w=400' }
+  { id: 'it2', name: 'Hampi Ruins', imageUrl: 'https://images.unsplash.com/photo-1620619767323-b95a89183081?auto=format&fit=crop&q=80&w=800' },
+  { id: 'it3', name: 'Goa Beaches', imageUrl: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=400' },
+  { id: 'it4', name: 'Munnar Hills', imageUrl: 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&q=80&w=400' }
 ];

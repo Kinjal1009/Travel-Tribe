@@ -110,7 +110,7 @@ const CreateTripScreen: React.FC<CreateTripScreenProps> = ({ onClose, onPublish 
           </div>
         </div>
 
-        {/* Maximum Group Size - Replaced Counter with Edit Text */}
+        {/* Maximum Group Size */}
         <div className="space-y-4">
           <label className="text-xs font-black text-slate-300 ml-1 uppercase tracking-[0.2em]">Maximum Group Size</label>
           <div className="relative flex items-center">

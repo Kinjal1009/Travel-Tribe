@@ -7,6 +7,7 @@ interface NotificationScreenProps {
   onChatClick?: () => void;
   onCompleteProfileClick?: () => void;
   isUserVerified?: boolean;
+  tripName?: string;
 }
 
 const NotificationScreen: React.FC<NotificationScreenProps> = ({ 
@@ -14,7 +15,8 @@ const NotificationScreen: React.FC<NotificationScreenProps> = ({
   showJoinSuccess, 
   onChatClick, 
   onCompleteProfileClick,
-  isUserVerified = false
+  isUserVerified = false,
+  tripName
 }) => {
   const [showIncompletePopup, setShowIncompletePopup] = useState(false);
 
@@ -83,7 +85,7 @@ const NotificationScreen: React.FC<NotificationScreenProps> = ({
                     <span className="text-[10px] font-bold text-slate-400">Just now</span>
                   </div>
                   <p className="text-[15px] font-black text-slate-900 dark:text-white mt-1">Request accepted!</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed font-bold">You joined the Kerala Backwaters Crew chat group.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed font-bold">You joined the {tripName || 'selected tribe'} chat group.</p>
                   <button 
                     onClick={handleChatRequest}
                     className="mt-4 w-full bg-primary text-white py-3.5 rounded-2xl text-sm font-black shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2"

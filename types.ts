@@ -58,4 +58,10 @@ export type ScreenState =
   | 'ADD_EXPENSE'
   | 'GROUP_CHAT'
   | 'DIRECT_CHAT'
-  | 'GROUP_INFO';
+  | 'GROUP_INFO'
+  | 'JOINED_GROUP'
+  | 'TRIP_CONFIRMATION'
+  | 'REVIEW_BOOKING'
+  | 'CHECKOUT'
+  | 'BOOKING_CONFIRMED'
+  | 'PACKING_LIST';

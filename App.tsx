@@ -29,6 +29,12 @@ import DirectChatScreen from './screens/DirectChatScreen';
 import WalletScreen from './screens/WalletScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 import PlaceholderScreen from './screens/PlaceholderScreen';
+import JoinedGroupScreen from './screens/JoinedGroupScreen';
+import TripConfirmationScreen from './screens/TripConfirmationScreen';
+import ReviewBookingScreen from './screens/ReviewBookingScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
+import BookingConfirmationScreen from './screens/BookingConfirmationScreen';
+import PackingListScreen from './screens/PackingListScreen';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 import { AppTab, ScreenState, Destination } from './types';
@@ -62,6 +68,8 @@ const App: React.FC = () => {
       status: 'ACTIVE'
     }
   ]);
+
+  const [bookedTrips, setBookedTrips] = useState<Destination[]>([]);
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userBio, setUserBio] = useState<string>('');
@@ -133,12 +141,14 @@ const App: React.FC = () => {
     return (
       <VibeMatchResultsScreen 
         onBack={() => setScreen('VIBE_CHECK')}
-        onJoin={() => { setHasCompletedVibeCheck(true); setShowJoinNotification(true); setScreen('NOTIFICATIONS'); }}
+        onJoin={() => { setHasCompletedVibeCheck(true); setShowJoinNotification(true); goToDashboard(); }}
         onCompleteProfile={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }}
         isProfileIncomplete={!isUserVerified}
       />
     );
   }
+
+  if (screen === 'JOINED_GROUP') return <JoinedGroupScreen onBack={goToDashboard} onJoinChat={() => { setActiveTab(AppTab.CHAT); setScreen('GROUP_CHAT'); }} tripDetails={selectedTrip} />;
 
   if (screen === 'COMMUNITY_ADVENTURES') return <CommunityAdventuresScreen onBack={goToDashboard} onSelectTrip={(trip) => { setSelectedTrip(trip); setScreen('TRIP_DETAILS'); }} userTrips={userCreatedTrips} />;
   
@@ -146,9 +156,10 @@ const App: React.FC = () => {
     <NotificationScreen 
       onBack={goToDashboard} 
       showJoinSuccess={showJoinNotification}
-      onChatClick={() => setScreen('GROUP_CHAT')}
+      onChatClick={() => setScreen('JOINED_GROUP')}
       onCompleteProfileClick={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }}
       isUserVerified={isUserVerified}
+      tripName={selectedTrip?.name}
     />
   );
   
@@ -209,7 +220,31 @@ const App: React.FC = () => {
   );
 
   if (screen === 'GROUP_CHAT') return <GroupChatScreen onBack={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.CHAT); }} onInfoClick={() => setScreen('GROUP_INFO')} tripDetails={selectedTrip} />;
-  if (screen === 'GROUP_INFO') return <GroupInfoScreen onBack={() => setScreen('GROUP_CHAT')} tripDetails={selectedTrip} />;
+  if (screen === 'GROUP_INFO') return <GroupInfoScreen onBack={() => setScreen('GROUP_CHAT')} tripDetails={selectedTrip} onViewConfirmation={() => setScreen('TRIP_CONFIRMATION')} />;
+  
+  if (screen === 'TRIP_CONFIRMATION') return <TripConfirmationScreen onBack={() => setScreen('GROUP_INFO')} onBook={() => setScreen('REVIEW_BOOKING')} tripName={selectedTrip?.name} />;
+  if (screen === 'REVIEW_BOOKING') return <ReviewBookingScreen onBack={() => setScreen('TRIP_CONFIRMATION')} onProceed={() => setScreen('CHECKOUT')} trip={selectedTrip} />;
+  if (screen === 'CHECKOUT') return <CheckoutScreen onBack={() => setScreen('REVIEW_BOOKING')} onSuccess={() => {
+    if (selectedTrip) {
+      setBookedTrips(prev => {
+        if (prev.find(t => t.id === selectedTrip.id)) return prev;
+        return [...prev, selectedTrip];
+      });
+    }
+    setScreen('BOOKING_CONFIRMED');
+  }} trip={selectedTrip} />;
+  
+  if (screen === 'BOOKING_CONFIRMED') return (
+    <BookingConfirmationScreen 
+      onClose={goToDashboard} 
+      onMeetGroup={() => { setActiveTab(AppTab.CHAT); setScreen('GROUP_CHAT'); }} 
+      onReviewItinerary={() => { setScreen('ITINERARY'); }} 
+      onPackingList={() => setScreen('PACKING_LIST')}
+    />
+  );
+
+  if (screen === 'PACKING_LIST') return <PackingListScreen onBack={() => setScreen('BOOKING_CONFIRMED')} tripName={selectedTrip?.name} />;
+
   if (screen === 'DIRECT_CHAT') return <DirectChatScreen onBack={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.CHAT); }} recipient={selectedRecipient} />;
   
   if (screen === 'BIO_SETUP') return <BioSetupScreen onBack={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }} initialBio={userBio} initialInterests={userInterests} onSave={(data) => { setUserBio(data.bio); setUserInterests(data.interests); setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }} />;
@@ -227,9 +262,27 @@ const App: React.FC = () => {
       case AppTab.EXPLORE:
         return <ExploreScreen onSeeAll={() => setScreen('COMMUNITY_ADVENTURES')} isLoggedIn={isLoggedIn} onStartAuth={() => setScreen('LANDING')} onSelectTrip={(trip) => { setSelectedTrip(trip); setScreen('TRIP_DETAILS'); }} />;
       case AppTab.MY_TRIPS:
-        return <MyTripsScreen onCreateTrip={() => setScreen('CREATE_TRIP')} onItineraryClick={() => setScreen('ITINERARY')} onChatClick={() => setScreen('GROUP_CHAT')} onNotificationClick={() => setScreen('NOTIFICATIONS')} profileImage={profileImage} />;
+        return (
+          <MyTripsScreen 
+            onCreateTrip={() => setScreen('CREATE_TRIP')} 
+            onItineraryClick={() => setScreen('ITINERARY')} 
+            onChatClick={() => setScreen('GROUP_CHAT')} 
+            onNotificationClick={() => setScreen('NOTIFICATIONS')} 
+            onUpcomingTripClick={(trip) => { setSelectedTrip(trip); setScreen('BOOKING_CONFIRMED'); }}
+            profileImage={profileImage} 
+            bookedTrips={bookedTrips}
+          />
+        );
       case AppTab.CHAT:
-        return <ChatHubScreen profileImage={profileImage} onNotificationClick={() => setScreen('NOTIFICATIONS')} onGroupClick={(trip) => { setSelectedTrip(trip); setScreen('GROUP_CHAT'); }} onDirectClick={(rec) => { setSelectedRecipient(rec); setScreen('DIRECT_CHAT'); }} />;
+        return (
+          <ChatHubScreen 
+            profileImage={profileImage} 
+            onNotificationClick={() => setScreen('NOTIFICATIONS')} 
+            onGroupClick={(trip) => { setSelectedTrip(trip); setScreen('GROUP_CHAT'); }} 
+            onDirectClick={(rec) => { setSelectedRecipient(rec); setScreen('DIRECT_CHAT'); }} 
+            bookedTrips={bookedTrips}
+          />
+        );
       case AppTab.WALLET:
         return <WalletScreen onBack={() => setActiveTab(AppTab.EXPLORE)} profileImage={profileImage} onNotificationClick={() => setScreen('NOTIFICATIONS')} onAddExpense={() => setScreen('ADD_EXPENSE')} expenses={walletExpenses} />;
       case AppTab.PROFILE:

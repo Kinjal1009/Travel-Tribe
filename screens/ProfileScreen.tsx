@@ -49,8 +49,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
   isVerifiedIdentity,
   isVerifiedSocial
 }) => {
-  const defaultImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuB73dsEcCajhGWp1neNQgNxm_GoP-OaQturmgptw5gs8HeUvNeujECZtoDL_JplACz9sL_mlyz5pupcNLx7Umtaix0Z4rA5sAq6C6bA-4G9v9pYBAVQsAqn1DHIgMpVONj4TEZGjMQ0OLS8d9dZ14T6t2bnOyEvn7Qgem8hpNWqznkj_TNN11JBFrMq1Y-cP892_LLEz9Iig5KoG0tiXzB_e0IzQMCk0RmixQdwRf9qGV71NJj4tH6a28n3tIowWG5ohC8tEYbQig";
-
   const isFullyVerified = isVerifiedVideo && isVerifiedIdentity && isVerifiedSocial;
   const hasAnyBadge = isVerifiedVideo || isVerifiedIdentity || isVerifiedSocial;
 
@@ -77,12 +75,16 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
         {/* Profile Info */}
         <div className="flex flex-col items-center gap-4 mb-8">
           <div className="relative">
-            <div className="h-32 w-32 rounded-[48px] border-[5px] border-white dark:border-surface-dark shadow-xl overflow-hidden bg-[#e8c8b0] flex items-center justify-center">
-              <img 
-                alt="Profile" 
-                className="h-full w-full object-cover" 
-                src={profileImage || defaultImage} 
-              />
+            <div className="h-32 w-32 rounded-[48px] border-[5px] border-white dark:border-surface-dark shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+              {profileImage ? (
+                <img 
+                  alt="Profile" 
+                  className="h-full w-full object-cover" 
+                  src={profileImage} 
+                />
+              ) : (
+                <span className="material-symbols-outlined text-slate-300 dark:text-slate-600 text-[64px] filled-icon">person</span>
+              )}
             </div>
             <button 
               onClick={onEditClick}

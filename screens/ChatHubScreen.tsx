@@ -1,17 +1,27 @@
 
 import React from 'react';
+import { Destination } from '../types';
 
 interface ChatHubScreenProps {
   profileImage?: string | null;
   onNotificationClick?: () => void;
   onGroupClick?: (tripDetails?: any) => void;
   onDirectClick?: (recipient: any) => void;
+  bookedTrips?: Destination[];
 }
 
-const ChatHubScreen: React.FC<ChatHubScreenProps> = ({ profileImage, onNotificationClick, onGroupClick, onDirectClick }) => {
-  const defaultImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuB73dsEcCajhGWp1neNQgNxm_GoP-OaQturmgptw5gs8HeUvNeujECZtoDL_JplACz9sL_mlyz5pupcNLx7Umtaix0Z4rA5sAq6C6bA-4G9v9pYBAVQsAqn1DHIgMpVONj4TEZGjMQ0OLS8d9dZ14T6t2bnOyEvn7Qgem8hpNWqznkj_TNN11JBFrMq1Y-cP892_LLEz9Iig5KoG0tiXzB_e0IzQMCk0RmixQdwRf9qGV71NJj4tH6a28n3tIowWG5ohC8tEYbQig";
-
+const ChatHubScreen: React.FC<ChatHubScreenProps> = ({ profileImage, onNotificationClick, onGroupClick, onDirectClick, bookedTrips = [] }) => {
   const groupChats = [
+    ...bookedTrips.map(trip => ({
+      id: trip.id,
+      name: `${trip.name} Squad`,
+      lastMsg: 'Group chat is now active!',
+      time: 'Just now',
+      unread: 1,
+      vibeMatch: trip.matchScore,
+      img: trip.imageUrl,
+      icon: 'auto_awesome'
+    })),
     {
       id: 'g1',
       name: 'Kerala Backwaters Crew',
@@ -45,10 +55,16 @@ const ChatHubScreen: React.FC<ChatHubScreenProps> = ({ profileImage, onNotificat
     <div className="flex flex-col h-full bg-background-light animate-in fade-in duration-500 font-display">
       <header className="sticky top-0 z-30 bg-background-light/90 backdrop-blur-md px-6 pt-10 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div 
-            className="size-11 rounded-full bg-cover bg-center border-2 border-white shadow-sm" 
-            style={{ backgroundImage: `url('${profileImage || defaultImage}')` }}
-          ></div>
+          <div className="size-11 rounded-full border-2 border-white bg-slate-100 shadow-sm flex items-center justify-center overflow-hidden">
+            {profileImage ? (
+              <div 
+                className="w-full h-full bg-cover bg-center" 
+                style={{ backgroundImage: `url('${profileImage}')` }}
+              ></div>
+            ) : (
+              <span className="material-symbols-outlined text-slate-300 text-[24px] filled-icon">person</span>
+            )}
+          </div>
           <div className="flex flex-col">
             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Travel Hub</p>
             <h1 className="text-lg font-black text-slate-gray leading-none">Messages</h1>

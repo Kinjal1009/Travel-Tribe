@@ -3,10 +3,11 @@ import React from 'react';
 
 interface GroupInfoScreenProps {
   onBack: () => void;
+  onViewConfirmation?: () => void;
   tripDetails?: any;
 }
 
-const GroupInfoScreen: React.FC<GroupInfoScreenProps> = ({ onBack, tripDetails }) => {
+const GroupInfoScreen: React.FC<GroupInfoScreenProps> = ({ onBack, onViewConfirmation, tripDetails }) => {
   const members = [
     { name: 'Alex Rivera', role: 'Foodie', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBmDYobTv06R0TCM3Y241SdQKRR6_LOdLapUglqLFFDsp_N2bGlcy7LuO47_2SKZj5xMCBDBUzsDvtYvNUScYtJ4DYaegfM0tNMio8k0iU1UY3C0M6ijS_4GWdDfxFUsnW0SORl9YLJ5EfLpBlIss-uKKXFRd5oT__Ugm6dTCWM11JDzyXxVUAHgYNEsSKFtuR4ADWfAlQPJQVfyhieuLSPAyrd6ChskPKyq0r2WHZp15nfq2nYokUNyG16AOizdazE0hahPnfsGg', isAdmin: false },
     { name: 'Sarah Chen', role: 'Admin / Guide', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBredibsX-W8nAcXusREPAtOCZXu0Era7UROpfDCneiir5cbTVWPDpezH_SreXilL-1BjccqWao9O75og4jxyDx28ouSsbPcpW0ff_nSjA4eoKHucpoKpeDt9NzNrgIlkGIVN_DUg8uJ4p3k8fy3hoVeK4ZojNvGnEbFUhNXrsJDW6x-k88QkqFc8JTKcWl2WT4Q0l5ZorFS5hWQ9Kmj3TpSQ0yAA4Zb6Vw_LLel-Ta50UgRfiJoMSM3Azlmf6JOUTCmx8Wt3WxDA', isAdmin: true },
@@ -21,7 +22,6 @@ const GroupInfoScreen: React.FC<GroupInfoScreenProps> = ({ onBack, tripDetails }
   return (
     <div className="flex flex-col h-full bg-background-light font-display animate-in slide-in-from-bottom duration-400 overflow-hidden">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-4 py-4 flex items-center gap-4 border-b border-slate-50 shrink-0">
-        {/* Fix: Ensured button is recognized as JSX by removing potential hidden characters and properly formatting tags */}
         <button 
           onClick={onBack}
           className="text-slate-gray flex size-10 items-center justify-center rounded-full hover:bg-slate-50 transition-colors active:scale-90"
@@ -41,11 +41,27 @@ const GroupInfoScreen: React.FC<GroupInfoScreenProps> = ({ onBack, tripDetails }
             </div>
           </div>
           <h1 className="text-2xl font-black text-slate-gray mb-1">{groupName}</h1>
-          <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-4">Trip Confirmed - 12 Days Left</p>
-          <div className="flex gap-2">
-            {/* Fix: Re-typed button tags on line 46-47 to resolve "Cannot find name 'button'" error */}
-            <button className="px-5 py-2 rounded-xl bg-primary/10 text-primary text-xs font-black uppercase tracking-widest active:scale-95 transition-all">Add Members</button>
-            <button className="px-5 py-2 rounded-xl bg-red-50 text-red-500 text-xs font-black uppercase tracking-widest active:scale-95 transition-all">Exit Group</button>
+          <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-6">Trip Confirmed - 12 Days Left</p>
+          
+          <div className="flex flex-col gap-3 w-full max-w-[300px]">
+            <div className="flex gap-2">
+              <button className="flex-1 px-5 py-3 rounded-2xl bg-primary text-white text-xs font-[900] uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">person_add</span>
+                Add Members
+              </button>
+              <button className="px-5 py-3 rounded-2xl bg-red-50 text-red-500 text-xs font-black uppercase tracking-widest active:scale-95 transition-all">
+                <span className="material-symbols-outlined text-[18px]">logout</span>
+              </button>
+            </div>
+            
+            {/* New Button for Traveller Confirmation */}
+            <button 
+              onClick={onViewConfirmation}
+              className="w-full px-5 py-4 rounded-2xl bg-white border-2 border-primary/20 text-primary text-xs font-[900] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+              View Confirmation
+            </button>
           </div>
         </section>
 

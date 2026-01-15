@@ -11,7 +11,7 @@ interface WalletScreenProps {
 
 const WalletScreen: React.FC<WalletScreenProps> = ({ onBack, onNotificationClick, onAddExpense, profileImage, expenses }) => {
   const [activeTab, setActiveTab] = useState<'Expenses' | 'Settlements'>('Expenses');
-  const defaultImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuB73dsEcCajhGWp1neNQgNxm_GoP-OaQturmgptw5gs8HeUvNeujECZtoDL_JplACz9sL_mlyz5pupcNLx7Umtaix0Z4rA5sAq6C6bA-4G9v9pYBAVQsAqn1DHIgMpVONj4TEZGjMQ0OLS8d9dZ14T6t2bnOyEvn7Qgem8hpNWqznkj_TNN11JBFrMq1Y-cP892_LLEz9Iig5KoG0tiXzB_e0IzQMCk0RmixQdwRf9qGV71NJj4tH6a28n3tIowWG5ohC8tEYbQig";
+  const defaultExpenseImage = "https://lh3.googleusercontent.com/aida-public/AB6AXuB73dsEcCajhGWp1neNQgNxm_GoP-OaQturmgptw5gs8HeUvNeujECZtoDL_JplACz9sL_mlyz5pupcNLx7Umtaix0Z4rA5sAq6C6bA-4G9v9pYBAVQsAqn1DHIgMpVONj4TEZGjMQ0OLS8d9dZ14T6t2bnOyEvn7Qgem8hpNWqznkj_TNN11JBFrMq1Y-cP892_LLEz9Iig5KoG0tiXzB_e0IzQMCk0RmixQdwRf9qGV71NJj4tH6a28n3tIowWG5ohC8tEYbQig";
   
   const totalOwed = expenses.reduce((acc, curr) => {
     const statusAmount = curr.statusAmount || 0;
@@ -26,10 +26,16 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ onBack, onNotificationClick
       <header className="sticky top-0 z-30 bg-background-light/90 backdrop-blur-md px-6 pt-10 pb-2 border-b border-slate-100 shrink-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div 
-              className="size-11 rounded-full bg-cover bg-center border-2 border-white shadow-sm" 
-              style={{ backgroundImage: `url('${profileImage || defaultImage}')` }}
-            ></div>
+            <div className="size-11 rounded-full border-2 border-white bg-slate-100 shadow-sm flex items-center justify-center overflow-hidden">
+              {profileImage ? (
+                <div 
+                  className="w-full h-full bg-cover bg-center" 
+                  style={{ backgroundImage: `url('${profileImage}')` }}
+                ></div>
+              ) : (
+                <span className="material-symbols-outlined text-slate-300 text-[24px] filled-icon">person</span>
+              )}
+            </div>
             <div className="flex flex-col">
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Welcome back</p>
               <h1 className="text-lg font-black text-slate-gray leading-none">Alex Rivera</h1>
@@ -111,7 +117,7 @@ const WalletScreen: React.FC<WalletScreenProps> = ({ onBack, onNotificationClick
               >
                 <div 
                   className="size-[68px] rounded-2xl bg-cover bg-center shrink-0 border border-slate-50" 
-                  style={{ backgroundImage: `url("${expense.image || defaultImage}")` }}
+                  style={{ backgroundImage: `url("${expense.image || defaultExpenseImage}")` }}
                 ></div>
                 
                 <div className="flex flex-1 flex-col min-w-0">
