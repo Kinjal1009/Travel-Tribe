@@ -1,0 +1,7 @@
+{
+  "name": "Travel Tribe",
+  "description": "A social travel application to connect, explore, and belong. Explore recommended destinations based on your vibe and manage your trips with a dedicated travel wallet and chat.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
