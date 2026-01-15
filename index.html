@@ -6,10 +6,30 @@
     <title>Travel Tribe</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwindcss.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00b2b2",
+              "background-light": "#f5f8f8",
+              "background-dark": "#0f2323",
+              "slate-gray": "#171212",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1f2226"
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"],
+              "body": ["Manrope", "sans-serif"]
+            }
+          }
+        }
+      }
+    </script>
     <style>
       body {
         font-family: 'Manrope', sans-serif;
-        background-color: #f1f5f9;
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -21,9 +41,7 @@
         width: 100vw;
         max-width: 450px;
         margin: 0 auto;
-        background: #fbfaf9;
         position: relative;
-        box-shadow: 0 0 20px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
       }
@@ -66,7 +84,7 @@
   }
 }
 </script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
