@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,23 +7,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+      }
       body {
         font-family: 'Manrope', sans-serif;
         background-color: #f1f5f9;
-        margin: 0;
-        padding: 0;
         overflow: hidden;
-        height: 100%;
-        width: 100%;
       }
       #root {
-        height: 100dvh;
-        width: 100vw;
-        max-width: 450px;
-        margin: 0 auto;
         background: #fbfaf9;
-        position: relative;
-        box-shadow: 0 0 20px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
       }
@@ -42,12 +40,12 @@
         scrollbar-width: none;
       }
       .glass-card {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
       }
       .ios-blur {
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
       @keyframes shimmer {
         from { transform: translateX(-100%); }
@@ -70,5 +68,6 @@
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>
