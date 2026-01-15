@@ -64,4 +64,7 @@ export type ScreenState =
   | 'REVIEW_BOOKING'
   | 'CHECKOUT'
   | 'BOOKING_CONFIRMED'
-  | 'PACKING_LIST';
+  | 'PACKING_LIST'
+  | 'RATING_TRIP'
+  | 'ALUMNI_COMMUNITY'
+  | 'SHARED_MEMORIES';

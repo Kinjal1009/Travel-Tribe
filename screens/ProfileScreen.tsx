@@ -26,6 +26,9 @@ interface ProfileScreenProps {
   onVerifyClick: () => void;
   onEmergencyDetailsClick: () => void;
   onSafetyCenterClick: () => void;
+  onRatingTripClick?: () => void;
+  onAlumniCommunityClick?: () => void;
+  onSharedMemoriesClick?: () => void;
   isSafetySetupComplete?: boolean;
   isVerifiedVideo: boolean;
   isVerifiedIdentity: boolean;
@@ -44,6 +47,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onVerifyClick,
   onEmergencyDetailsClick,
   onSafetyCenterClick,
+  onRatingTripClick,
+  onAlumniCommunityClick,
+  onSharedMemoriesClick,
   isSafetySetupComplete = false,
   isVerifiedVideo,
   isVerifiedIdentity,
@@ -61,7 +67,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen">
-      {/* Header - No Settings Icon */}
+      {/* Header */}
       <header className="flex items-center justify-between px-6 pt-10 pb-4 sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md z-10">
         <h1 className="text-[32px] font-black text-slate-900 dark:text-white tracking-tight">Profile</h1>
         <div className="flex items-center gap-3">
@@ -114,7 +120,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         </div>
 
-        {/* ACTIVE BADGES */}
+        {/* Active Badges */}
         {hasAnyBadge && (
           <div className="mb-10">
             <h3 className="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.25em] px-1 mb-5">Active Badges</h3>
@@ -156,7 +162,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         )}
 
-        {/* Verification Status Card */}
+        {/* 1. Build Your Trust Profile Card */}
         {!isFullyVerified && (
           <div className="mb-10">
             <div className="bg-primary rounded-[36px] p-8 text-white shadow-xl shadow-primary/10 relative overflow-hidden">
@@ -186,7 +192,64 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         )}
 
-        {/* ABOUT ME SECTION (Card View for Filled Details) */}
+        {/* 2. COMPLETE YOUR PROFILE SECTION */}
+        {showCompleteProfile && (
+          <div className="mb-10">
+            <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] px-2 mb-4">Complete Your Profile</h3>
+            <div className="bg-white dark:bg-surface-dark rounded-[36px] overflow-hidden shadow-sm border border-slate-50 dark:border-slate-800 divide-y divide-slate-50 dark:divide-slate-800">
+              
+              {!hasBio && (
+                <button 
+                  onClick={onAddBio}
+                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+                >
+                  <div className="h-12 w-12 rounded-[20px] bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[26px] filled-icon">person</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-base font-black text-slate-900 dark:text-white">Add Bio & Interests</p>
+                    <p className="text-xs text-slate-400 font-bold mt-0.5">Tell us about your travel style</p>
+                  </div>
+                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
+                </button>
+              )}
+
+              {!hasMatchSettings && (
+                <button 
+                  onClick={onSelectInterests}
+                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+                >
+                  <div className="h-12 w-12 rounded-[20px] bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[26px] filled-icon">extension</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-base font-black text-slate-900 dark:text-white">Match Settings</p>
+                    <p className="text-xs text-slate-400 font-bold mt-0.5">Help us suggest better tribes</p>
+                  </div>
+                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
+                </button>
+              )}
+
+              {!hasEmergency && (
+                <button 
+                  onClick={onEmergencyDetailsClick}
+                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
+                >
+                  <div className="h-12 w-12 rounded-[20px] bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-[26px] filled-icon">favorite</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-base font-black text-slate-900 dark:text-white">Emergency Details</p>
+                    <p className="text-xs text-slate-400 font-bold mt-0.5">Essential for safety during trips</p>
+                  </div>
+                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 3. ABOUT ME SECTION (Detail Cards) */}
         {(hasBio || hasInterests || hasEmergency || hasMatchSettings) && (
           <div className="space-y-4 mb-10">
             <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] px-2 mb-4">About Me</h3>
@@ -262,65 +325,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </div>
         )}
 
-        {/* COMPLETE YOUR PROFILE SECTION (Remaining items) */}
-        {showCompleteProfile && (
-          <div className="mb-10">
-            <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] px-2 mb-4">Complete Your Profile</h3>
-            <div className="bg-white dark:bg-surface-dark rounded-[36px] overflow-hidden shadow-sm border border-slate-50 dark:border-slate-800 divide-y divide-slate-50 dark:divide-slate-800">
-              
-              {!hasBio && (
-                <button 
-                  onClick={onAddBio}
-                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-                >
-                  <div className="h-12 w-12 rounded-[20px] bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[26px] filled-icon">person</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base font-black text-slate-900 dark:text-white">Add Bio & Interests</p>
-                    <p className="text-xs text-slate-400 font-bold mt-0.5">Tell us about your travel style</p>
-                  </div>
-                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
-                </button>
-              )}
-
-              {!hasMatchSettings && (
-                <button 
-                  onClick={onSelectInterests}
-                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-                >
-                  <div className="h-12 w-12 rounded-[20px] bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[26px] filled-icon">extension</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base font-black text-slate-900 dark:text-white">Match Settings</p>
-                    <p className="text-xs text-slate-400 font-bold mt-0.5">Help us suggest better tribes</p>
-                  </div>
-                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
-                </button>
-              )}
-
-              {!hasEmergency && (
-                <button 
-                  onClick={onEmergencyDetailsClick}
-                  className="w-full flex items-center gap-5 p-6 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left group"
-                >
-                  <div className="h-12 w-12 rounded-[20px] bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[26px] filled-icon">favorite</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-base font-black text-slate-900 dark:text-white">Emergency Details</p>
-                    <p className="text-xs text-slate-400 font-bold mt-0.5">Essential for safety during trips</p>
-                  </div>
-                  <span className="material-symbols-outlined text-primary font-black group-hover:translate-x-1 transition-transform">chevron_right</span>
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* External Links */}
-        <div className="space-y-4 pt-4">
+        {/* 4. Account & Safety Section (Navigation Links) */}
+        <div className="space-y-4 mb-10">
+          <h3 className="text-[13px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] px-2 mb-4">Account & Safety</h3>
+          
           <button 
             onClick={onSafetyCenterClick}
             className="w-full flex items-center gap-4 px-6 py-5 rounded-[28px] bg-white dark:bg-surface-dark border border-slate-50 dark:border-slate-800 shadow-sm transition-all active:scale-[0.99] text-left"
@@ -332,6 +340,42 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <span className="material-symbols-outlined text-slate-300">chevron_right</span>
           </button>
 
+          <button 
+            onClick={onRatingTripClick}
+            className="w-full flex items-center gap-4 px-6 py-5 rounded-[28px] bg-white dark:bg-surface-dark border border-slate-50 dark:border-slate-800 shadow-sm transition-all active:scale-[0.99] text-left"
+          >
+            <div className="size-11 rounded-2xl bg-[#FFBF00]/10 flex items-center justify-center text-[#FFBF00]">
+              <span className="material-symbols-outlined text-[22px] filled-icon">star</span>
+            </div>
+            <span className="flex-1 text-base font-black text-slate-800 dark:text-white">Review Recent Trips</span>
+            <span className="material-symbols-outlined text-slate-300">chevron_right</span>
+          </button>
+
+          <button 
+            onClick={onAlumniCommunityClick}
+            className="w-full flex items-center gap-4 px-6 py-5 rounded-[28px] bg-white dark:bg-surface-dark border border-slate-50 dark:border-slate-800 shadow-sm transition-all active:scale-[0.99] text-left"
+          >
+            <div className="size-11 rounded-2xl bg-[#FF7043]/10 flex items-center justify-center text-[#FF7043]">
+              <span className="material-symbols-outlined text-[22px] filled-icon">groups</span>
+            </div>
+            <span className="flex-1 text-base font-black text-slate-800 dark:text-white">Alumni Community</span>
+            <span className="material-symbols-outlined text-slate-300">chevron_right</span>
+          </button>
+
+          <button 
+            onClick={onSharedMemoriesClick}
+            className="w-full flex items-center gap-4 px-6 py-5 rounded-[28px] bg-white dark:bg-surface-dark border border-slate-50 dark:border-slate-800 shadow-sm transition-all active:scale-[0.99] text-left"
+          >
+            <div className="size-11 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="material-symbols-outlined text-[22px] filled-icon">photo_album</span>
+            </div>
+            <span className="flex-1 text-base font-black text-slate-800 dark:text-white">Shared Memories</span>
+            <span className="material-symbols-outlined text-slate-300">chevron_right</span>
+          </button>
+        </div>
+
+        {/* 5. Support & Feedback Section */}
+        <div className="space-y-4 pt-4">
           <button className="w-full flex items-center gap-4 px-6 py-5 rounded-[28px] bg-white dark:bg-surface-dark border border-slate-50 dark:border-slate-800 shadow-sm transition-all active:scale-[0.99] text-left">
             <div className="size-11 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
               <span className="material-symbols-outlined text-[22px] filled-icon">help</span>

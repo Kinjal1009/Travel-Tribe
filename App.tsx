@@ -35,6 +35,9 @@ import ReviewBookingScreen from './screens/ReviewBookingScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import BookingConfirmationScreen from './screens/BookingConfirmationScreen';
 import PackingListScreen from './screens/PackingListScreen';
+import RatingTripScreen from './screens/RatingTripScreen';
+import AlumniCommunityScreen from './screens/AlumniCommunityScreen';
+import SharedMemoriesScreen from './screens/SharedMemoriesScreen';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 import { AppTab, ScreenState, Destination } from './types';
@@ -257,6 +260,10 @@ const App: React.FC = () => {
   if (screen === 'IDENTITY_VERIFY') return <IdentityVerifyScreen onBack={() => setScreen('TRUST_PROFILE')} onSkip={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }} onNext={() => { setIsVerifiedIdentity(true); setScreen('TRUST_PROFILE'); }} />;
   if (screen === 'MATCH_SETTINGS') return <MatchSettingsScreen onBack={goToDashboard} onSave={(data) => { setMatchSettings({ ...data, hasConfigured: true }); goToDashboard(); }} initialData={matchSettings} />;
 
+  if (screen === 'RATING_TRIP') return <RatingTripScreen onBack={goToDashboard} />;
+  if (screen === 'ALUMNI_COMMUNITY') return <AlumniCommunityScreen onBack={goToDashboard} />;
+  if (screen === 'SHARED_MEMORIES') return <SharedMemoriesScreen onBack={goToDashboard} />;
+
   const renderDashboard = () => {
     switch (activeTab) {
       case AppTab.EXPLORE:
@@ -286,7 +293,7 @@ const App: React.FC = () => {
       case AppTab.WALLET:
         return <WalletScreen onBack={() => setActiveTab(AppTab.EXPLORE)} profileImage={profileImage} onNotificationClick={() => setScreen('NOTIFICATIONS')} onAddExpense={() => setScreen('ADD_EXPENSE')} expenses={walletExpenses} />;
       case AppTab.PROFILE:
-        return <ProfileScreen profileImage={profileImage} userBio={userBio} userInterests={userInterests} emergencyContact={emergencyContact} matchSettings={matchSettings} onEditClick={() => setScreen('CAMERA_PROFILE')} onAddBio={() => setScreen('BIO_SETUP')} onSelectInterests={() => setScreen('MATCH_SETTINGS')} onVerifyClick={() => setScreen('TRUST_PROFILE')} isSafetySetupComplete={isSafetySetupComplete} onEmergencyDetailsClick={() => setScreen('SAFETY_SETUP')} onSafetyCenterClick={() => setScreen('SAFETY_HUB')} isVerifiedVideo={isVerifiedVideo} isVerifiedIdentity={isVerifiedIdentity} isVerifiedSocial={isVerifiedSocial} />;
+        return <ProfileScreen profileImage={profileImage} userBio={userBio} userInterests={userInterests} emergencyContact={emergencyContact} matchSettings={matchSettings} onEditClick={() => setScreen('CAMERA_PROFILE')} onAddBio={() => setScreen('BIO_SETUP')} onSelectInterests={() => setScreen('MATCH_SETTINGS')} onVerifyClick={() => setScreen('TRUST_PROFILE')} isSafetySetupComplete={isSafetySetupComplete} onEmergencyDetailsClick={() => setScreen('SAFETY_SETUP')} onSafetyCenterClick={() => setScreen('SAFETY_HUB')} onRatingTripClick={() => setScreen('RATING_TRIP')} onAlumniCommunityClick={() => setScreen('ALUMNI_COMMUNITY')} onSharedMemoriesClick={() => setScreen('SHARED_MEMORIES')} isVerifiedVideo={isVerifiedVideo} isVerifiedIdentity={isVerifiedIdentity} isVerifiedSocial={isVerifiedSocial} />;
       default:
         return <PlaceholderScreen tab={activeTab} />;
     }
