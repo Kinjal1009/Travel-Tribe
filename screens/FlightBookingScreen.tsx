@@ -89,7 +89,7 @@ const FlightBookingScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setIsThinking(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || ''});
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || ''});
       const today = new Date().toISOString().split('T')[0];
       
       const contextPrompt = `You are an expert flight assistant named AI Bot for the social travel app "Travel Tribe". 
