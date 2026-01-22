@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { RECOMMENDED_DESTINATIONS } from '../constants';
 import { Destination } from '../types';
 
 interface MyTripsScreenProps {
   onCreateTrip: () => void;
+  onSearchFlights: () => void;
   onItineraryClick?: () => void;
   onChatClick?: () => void;
   onNotificationClick: () => void;
@@ -13,14 +13,15 @@ interface MyTripsScreenProps {
   bookedTrips: Destination[];
 }
 
-const MyTripsScreen: React.FC<MyTripsScreenProps> = ({ 
-  onCreateTrip, 
-  onItineraryClick, 
-  onChatClick, 
-  onNotificationClick, 
+const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
+  onCreateTrip,
+  onSearchFlights,
+  onItineraryClick,
+  onChatClick,
+  onNotificationClick,
   onUpcomingTripClick,
   profileImage,
-  bookedTrips 
+  bookedTrips
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -33,8 +34,8 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
         <div className="flex items-center gap-3">
           <div className="size-11 rounded-full border-2 border-white bg-slate-100 shadow-sm flex items-center justify-center overflow-hidden">
             {profileImage ? (
-              <div 
-                className="w-full h-full bg-cover bg-center" 
+              <div
+                className="w-full h-full bg-cover bg-center"
                 style={{ backgroundImage: `url('${profileImage}')` }}
               ></div>
             ) : (
@@ -46,7 +47,7 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
             <h1 className="text-lg font-black text-slate-gray leading-none">Alex Rivera</h1>
           </div>
         </div>
-        <button 
+        <button
           onClick={onNotificationClick}
           className="size-11 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-gray relative active:scale-90 transition-transform"
         >
@@ -67,32 +68,24 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
                 <span className="material-symbols-outlined text-[36px] filled-icon">flight_takeoff</span>
               </div>
             </div>
-            
-            <div className="relative group mb-5">
-              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400">
-                <span className="material-symbols-outlined text-[22px]">search</span>
-              </div>
-              <input 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full h-16 pl-14 pr-5 bg-slate-50 border-none rounded-[24px] focus:ring-2 focus:ring-primary/20 text-base font-bold text-slate-gray placeholder:text-slate-300 transition-all" 
-                placeholder="Search for a city, country..." 
-                type="text"
-              />
-            </div>
 
-            <button 
-              onClick={onCreateTrip}
-              disabled={isButtonDisabled}
-              className={`w-full font-black h-16 rounded-[24px] transition-all flex items-center justify-center gap-3 text-base shadow-xl ${
-                isButtonDisabled 
-                ? 'bg-slate-100 text-slate-300 cursor-not-allowed shadow-none' 
-                : 'bg-primary text-white shadow-primary/20 active:scale-[0.98]'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[24px] font-black">add_circle</span>
-              Create a New Trip
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={onCreateTrip}
+                className="w-full font-black h-16 rounded-[24px] transition-all flex items-center justify-center gap-3 text-base shadow-xl bg-primary text-white shadow-primary/20 active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-[24px] font-black">add_circle</span>
+                Create a New Trip
+              </button>
+              
+              <button
+                onClick={onSearchFlights}
+                className="w-full font-black h-16 rounded-[24px] transition-all flex items-center justify-center gap-3 text-base shadow-sm border-2 border-primary/20 bg-white text-primary hover:bg-primary/5 active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-[24px] font-black">search</span>
+                Search Flights
+              </button>
+            </div>
           </div>
         </section>
 
@@ -105,29 +98,29 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
               <span className="size-2 bg-primary rounded-full"></span>
             </div>
           </div>
-          
+
           <div className="px-6">
             <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-slate-50">
-              <div 
-                className="relative h-64 w-full bg-cover bg-center" 
+              <div
+                className="relative h-64 w-full bg-cover bg-center"
                 style={{ backgroundImage: "url('https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&q=80&w=800')" }}
               >
                 <div className="absolute top-6 left-6 bg-black/40 backdrop-blur-md text-white text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-widest">
                   Currently Traveling
                 </div>
-                
+
                 {/* Map Pin Card Overlay */}
                 <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm p-3 rounded-[24px] shadow-lg border border-slate-100">
                   <div className="size-14 rounded-2xl bg-blue-50/50 flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10" style={{ 
-                      backgroundImage: 'radial-gradient(#888 1px, transparent 1px)', 
-                      backgroundSize: '10px 10px' 
+                    <div className="absolute inset-0 opacity-10" style={{
+                      backgroundImage: 'radial-gradient(#888 1px, transparent 1px)',
+                      backgroundSize: '10px 10px'
                     }}></div>
                     <span className="material-symbols-outlined text-primary text-[28px] filled-icon relative z-10">location_on</span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-8">
                 <div className="flex justify-between items-baseline mb-4">
                   <div>
@@ -144,14 +137,14 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <button 
+                  <button
                     onClick={onItineraryClick}
                     className="flex items-center justify-center gap-3 h-16 rounded-[24px] bg-slate-50 text-slate-gray font-black text-base hover:bg-slate-100 transition-all active:scale-95"
                   >
                     <span className="material-symbols-outlined text-[24px] text-primary">calendar_today</span>
                     Itinerary
                   </button>
-                  <button 
+                  <button
                     onClick={onChatClick}
                     className="flex items-center justify-center gap-3 h-16 rounded-[24px] bg-slate-50 text-slate-gray font-black text-base hover:bg-slate-100 transition-all relative active:scale-95"
                   >
@@ -176,14 +169,14 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
             </div>
             <div className="flex gap-5 overflow-x-auto no-scrollbar px-6 pb-4">
               {bookedTrips.map((trip) => (
-                <div 
+                <div
                   key={trip.id}
                   onClick={() => onUpcomingTripClick(trip)}
                   className="min-w-[280px] bg-white rounded-[32px] overflow-hidden shadow-md border border-slate-50 active:scale-[0.98] transition-all group"
                 >
                   <div className="relative h-44 overflow-hidden">
-                    <img 
-                      src={trip.imageUrl} 
+                    <img
+                      src={trip.imageUrl}
                       alt={trip.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -196,7 +189,7 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">{trip.country} • {trip.days} Days</p>
                     <div className="mt-4 flex items-center justify-between pt-4 border-t border-slate-50">
                       <div className="flex -space-x-2">
-                         {[1,2,3].map(i => <div key={i} className="size-7 rounded-full border-2 border-white bg-slate-100 bg-cover" style={{backgroundImage: `url('https://i.pravatar.cc/100?u=u${i}')`}}></div>)}
+                        {[1, 2, 3].map(i => <div key={i} className="size-7 rounded-full border-2 border-white bg-slate-100 bg-cover" style={{ backgroundImage: `url('https://i.pravatar.cc/100?u=u${i}')` }}></div>)}
                       </div>
                       <span className="text-primary font-black text-sm">View Summary</span>
                     </div>
@@ -215,16 +208,16 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
               View All <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>
-          
+
           <div className="flex gap-5 overflow-x-auto no-scrollbar px-6 pb-6">
             {RECOMMENDED_DESTINATIONS.map((dest) => (
-              <div 
+              <div
                 key={dest.id}
                 className="min-w-[280px] bg-white rounded-[32px] overflow-hidden shadow-sm border border-slate-50 group cursor-pointer active:scale-[0.98] transition-all"
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={dest.imageUrl} 
+                  <img
+                    src={dest.imageUrl}
                     alt={dest.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -243,7 +236,7 @@ const MyTripsScreen: React.FC<MyTripsScreenProps> = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-50">
                     <div className="flex flex-col">
                       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Duration</p>

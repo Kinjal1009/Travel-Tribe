@@ -27,7 +27,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onBack, onComplete, onLogin
           onClick={step === 1 ? onBack : () => setStep(step - 1)}
           className="text-[#171212] flex size-12 shrink-0 items-center justify-start active:scale-90 transition-transform"
         >
-          <span className="material-symbols-outlined font-bold">arrow_back_ios</span>
+          <span className="material-symbols-outlined font-bold">arrow_back</span>
         </button>
         <h2 className="text-[#171212] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
           Create Account

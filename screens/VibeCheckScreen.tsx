@@ -1,289 +1,338 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { RISHIKESH_INTERESTS } from '../constants';
+import { generateRishikeshQuiz, matchTravelers } from '../services/ragBackendService';
+import { Question, Match } from '../types';
 
 interface VibeCheckScreenProps {
   onBack: () => void;
-  onNext: () => void;
+  onJoin: () => void;
   destination?: string;
 }
 
-const VibeCheckScreen: React.FC<VibeCheckScreenProps> = ({ onBack, onNext, destination = 'your destination' }) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+type VibeState = 'INTERESTS' | 'LOADING_QUIZ' | 'QUIZ' | 'LOADING_MATCH' | 'RESULTS';
 
-  const questions = [
-    {
-      id: 1,
-      category: "pace",
-      question: `How do you prefer to start your day in ${destination}?`,
-      options: [
-        "Early sunrise activity (5-6 AM)",
-        "Leisurely breakfast (8-9 AM)",
-        "Sleep in and brunch (10-11 AM)",
-        "Flexible, no routine"
-      ],
-      dimension: "lifestyle",
-      icon: "wb_sunny"
-    },
-    {
-      id: 2,
-      category: "activities",
-      question: `Which ${destination} activity excites you most?`,
-      options: [
-        "Adventure sports (surfing, diving)",
-        "Cultural experiences (temples, classes)",
-        "Relaxation (spa, beach)",
-        "Nightlife and socializing"
-      ],
-      dimension: "interests",
-      icon: "hiking"
-    },
-    {
-      id: 3,
-      category: "budget",
-      question: "Your accommodation preference?",
-      options: [
-        "Budget hostel",
-        "Mid-range hotel",
-        "Boutique villa",
-        "Luxury resort"
-      ],
-      dimension: "budget",
-      icon: "hotel"
-    },
-    {
-      id: 4,
-      category: "social",
-      question: "Your ideal group dynamic?",
-      options: [
-        "Close-knit, plan together",
-        "Flexible, some solo time",
-        "Mostly independent",
-        "Party together"
-      ],
-      dimension: "social",
-      icon: "groups"
-    },
-    {
-      id: 5,
-      category: "food",
-      question: "Food exploration style?",
-      options: [
-        "Street food adventurer",
-        "Restaurant foodie",
-        "Cooking classes",
-        "Familiar foods"
-      ],
-      dimension: "interests",
-      icon: "restaurant"
-    },
-    {
-      id: 6,
-      category: "schedule",
-      question: "Daily planning preference?",
-      options: [
-        "Detailed itinerary",
-        "Loose plan",
-        "Completely spontaneous",
-        "Mix of both"
-      ],
-      dimension: "travel_style",
-      icon: "event_note"
-    },
-    {
-      id: 7,
-      category: "nightlife",
-      question: "How you like to spend your Evening?",
-      options: [
-        "Party and clubs",
-        "Dinner and drinks",
-        "Quiet evening",
-        "Early to bed"
-      ],
-      dimension: "social",
-      icon: "nightlife"
-    },
-    {
-      id: 8,
-      category: "transport",
-      question: "Getting around preference?",
-      options: [
-        "Scooter/bike",
-        "Private driver",
-        "Public transport",
-        "Walking"
-      ],
-      dimension: "travel_style",
-      icon: "directions_bus"
-    },
-    {
-      id: 9,
-      category: "constraints",
-      question: "What is the deal breakers constraint?",
-      options: [
-        "Smoking",
-        "Heavy drinking",
-        "Late nights",
-        "None, all flexible"
-      ],
-      dimension: "constraints",
-      icon: "warning"
-    }
-  ];
+const useCountUp = (target: number, duration: number = 1500) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = 1 - (1 - progress) * (1 - progress);
+      setCount(Math.floor(easeProgress * target));
+      if (progress < 1) window.requestAnimationFrame(step);
+    };
+    window.requestAnimationFrame(step);
+  }, [target, duration]);
+  return count;
+};
 
-  const currentQuestion = questions[currentQuestionIndex];
-  
-  if (!currentQuestion) {
-    return null;
-  }
-
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
-
-  const handleOptionSelect = (option: string) => {
-    setAnswers(prev => ({ ...prev, [currentQuestion.id]: option }));
-    
-    // Auto-advance logic: only if not the last question
-    if (!isLastQuestion) {
-      setTimeout(() => {
-        setCurrentQuestionIndex(prev => prev + 1);
-      }, 400);
-    }
-  };
-
-  const handlePrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
-  };
-
-  const isSelected = (option: string) => answers[currentQuestion.id] === option;
+export const ResultsView: React.FC<{ matches: Match[], onReset: () => void, onJoin: () => void }> = ({ matches, onReset, onJoin }) => {
+  const averageComp = matches.length > 0 ? Math.round(matches.reduce((a, b) => a + b.compatibility, 0) / matches.length) : 0;
+  const animatedAvg = useCountUp(averageComp);
 
   return (
-    <div className="relative flex flex-col h-full bg-background-light animate-in slide-in-from-right duration-500 font-display overflow-hidden">
-      {/* Abstract Background Decoration */}
-      <div className="absolute top-40 -right-20 opacity-5 pointer-events-none z-0">
-        <svg height="400" viewBox="0 0 100 100" width="400" xmlns="http://www.w3.org/2000/svg">
-          <path className="text-primary" d="M10 50 Q 25 25 50 50 T 90 50" fill="none" stroke="currentColor" strokeWidth="0.5"></path>
-          <path className="text-primary" d="M10 60 Q 25 35 50 60 T 90 60" fill="none" stroke="currentColor" strokeWidth="0.5"></path>
-          <path className="text-primary" d="M10 70 Q 25 45 50 70 T 90 70" fill="none" stroke="currentColor" strokeWidth="0.5"></path>
-        </svg>
+    <div className="animate-in fade-in zoom-in-95 duration-700 h-full flex flex-col">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-black text-slate-900 mb-1">Your Spiritual Tribe</h2>
+        <p className="text-slate-400 font-medium text-sm">Frequency alignment successful.</p>
       </div>
 
-      {/* Main Header */}
-      <header className="sticky top-0 z-50 flex items-center bg-background-light/80 backdrop-blur-md p-4 justify-between border-b border-gray-200/50">
+      <div className="mb-6 bg-gradient-to-br from-slate-900 to-teal-900 p-6 rounded-[1.5rem] shadow-xl text-white">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h4 className="text-teal-300 font-black uppercase tracking-widest text-[9px] mb-1">Overall Sync</h4>
+            <div className="text-4xl font-black flex items-baseline">
+              {animatedAvg}<span className="text-xl ml-1 opacity-30">%</span>
+            </div>
+          </div>
+          <div className="flex -space-x-3">
+            {matches.slice(0, 4).map((m, i) => (
+              <img key={m.id} src={m.avatar} className="w-10 h-10 rounded-full border-2 border-slate-800 shadow-xl" alt="avatar" />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 flex-grow content-start overflow-y-auto no-scrollbar">
+        {matches.slice(0, 3).map((match) => (
+          <div key={match.id} className="bg-white rounded-[1.2rem] border border-slate-100 p-4 flex flex-row items-center gap-4 shadow-sm">
+            <div className="relative shrink-0">
+              <img src={match.avatar} alt={match.name} className="w-16 h-16 rounded-full border-2 border-teal-100" />
+              <div className="absolute -bottom-1 -right-1 bg-slate-900 text-white w-7 h-7 flex items-center justify-center rounded-full border-2 border-white">
+                <span className="font-black text-[9px]">{match.compatibility}%</span>
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-black text-slate-800 leading-tight mb-1">{match.name}</h3>
+              <span className="text-[#00b2b2] text-[8px] font-black uppercase tracking-widest mb-2 block">{match.travelStyle}</span>
+              <div className="flex flex-wrap gap-1 mt-auto">
+                {match.interests.slice(0, 2).map((it, i) => (
+                  <span key={i} className="bg-slate-50 text-slate-400 text-[7px] px-1.5 py-0.5 rounded-md font-bold uppercase">{it}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-3 mt-6">
+        <button
+          onClick={onJoin}
+          className="w-full bg-primary text-white py-4 rounded-[1.2rem] font-black text-base shadow-xl shadow-primary/20 active:scale-95 transition-all"
+        >
+          REQUEST TO JOIN TRIBE
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const VibeCheckScreen: React.FC<VibeCheckScreenProps> = ({ onBack, onJoin, destination = 'Rishikesh' }) => {
+  const [viewState, setViewState] = useState<VibeState>('INTERESTS');
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentQuizIdx, setCurrentQuizIdx] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const toggleInterest = (id: string) => {
+    setSelectedInterests(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const handleGenerateQuiz = async () => {
+    if (selectedInterests.length < 3) return;
+    setViewState('LOADING_QUIZ');
+    try {
+      const questions = await generateRishikeshQuiz(selectedInterests);
+      if (!questions || questions.length === 0) {
+        throw new Error('No questions received from RAG service');
+      }
+      setQuestions(questions);
+      setViewState('QUIZ');
+    } catch (error) {
+     console.error('RAG Quiz Error:', error);
+      alert('RAG Service is currently busy. Using essential local insights.');
+      // Dynamic fallback if service is down
+      setQuestions([
+        { id: 'f1', text: 'How do you prefer to start your morning in the Yoga Capital?', options: ['Sunrise Yoga by the Ganga', 'Espresso at a Riverside Cafe', 'A silent forest trek', 'Ashram meditation'] },
+        { id: 'f2', text: 'Which element of Rishikesh resonates most with you?', options: ['The rush of the river (Adventure)', 'The silence of the ashram (Peace)', 'The rhythm of the Aarti (Culture)', 'The energy of the cafes (Community)'] },
+        { id: 'f3', text: 'What is your ideal evening ritual?', options: ['Ganga Aarti at Parmarth Niketan', 'Live Sitar at a rooftop cafe', 'Sunset hike to Neer Garh', 'Quiet stargazing by the river'] }
+      ]);
+      setViewState('QUIZ');
+    }
+  };
+
+  const handleSelectAnswer = (qIdx: number, oIdx: number) => {
+    setAnswers(prev => ({ ...prev, [qIdx]: oIdx }));
+    if (qIdx < questions.length - 1) {
+      setTimeout(() => setCurrentQuizIdx(qIdx + 1), 400);
+    }
+  };
+
+  const handleSubmitQuiz = async () => {
+    setViewState('LOADING_MATCH');
+    try {
+      const resultMatches = await matchTravelers(selectedInterests, answers, questions);
+      setMatches(resultMatches);
+      setTimeout(() => setViewState('RESULTS'), 1500);
+    } catch (error) {
+      console.error('Match Error:', error);
+      setViewState('INTERESTS');
+    }
+  };
+
+  const handleJoinRequest = () => {
+    setShowSuccessModal(true);
+  };
+
+  const InterestsView = () => (
+    <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="mb-8 text-center px-4">
+        <h2 className="text-3xl font-[900] text-slate-gray leading-tight font-display tracking-tight">Personalize your journey</h2>
+        <p className="text-slate-400 font-bold mt-3 text-sm">Select at least 3 facets to find your tribe.</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 flex-1 content-start overflow-y-auto no-scrollbar pb-6 px-4">
+        {RISHIKESH_INTERESTS.map((interest) => {
+          const isSelected = selectedInterests.includes(interest.id);
+          return (
+            <button
+              key={interest.id}
+              onClick={() => toggleInterest(interest.id)}
+              className={`flex flex-col items-center justify-center p-4 rounded-[28px] border-2 transition-all duration-300 aspect-square ${
+                isSelected
+                  ? 'bg-primary border-primary text-white shadow-xl shadow-primary/20 scale-[1.02]'
+                  : 'bg-white border-slate-50 text-slate-500 hover:border-primary/20'
+              }`}
+            >
+              <span className="text-3xl mb-2">{interest.icon}</span>
+              <span className="font-black text-[9px] uppercase tracking-widest text-center leading-tight">{interest.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="pt-6 pb-10 px-4">
+        <button
+          onClick={handleGenerateQuiz}
+          disabled={selectedInterests.length < 3}
+          className={`w-full h-16 rounded-[24px] font-black text-lg transition-all flex items-center justify-center gap-3 shadow-xl ${
+            selectedInterests.length >= 3 
+              ? 'bg-slate-900 text-white shadow-black/10 active:scale-[0.98]' 
+              : 'bg-slate-100 text-slate-300 cursor-not-allowed shadow-none'
+          }`}
+        >
+          Generate My Quiz
+          <span className="material-symbols-outlined">bolt</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  const LoadingView = ({ title, subtitle }: { title: string; subtitle: string }) => (
+    <div className="flex flex-col items-center justify-center h-full animate-in fade-in duration-500 text-center px-10">
+      <div className="relative size-32 mb-10">
+        <div className="absolute inset-0 rounded-full border-[6px] border-primary/10"></div>
+        <div className="absolute inset-0 rounded-full border-[6px] border-primary border-t-transparent animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="material-symbols-outlined text-primary text-4xl filled-icon animate-pulse">auto_awesome</span>
+        </div>
+      </div>
+      <h2 className="text-2xl font-black text-slate-gray font-display tracking-tight">{title}</h2>
+      <p className="text-slate-400 font-bold mt-3 leading-relaxed text-sm">{subtitle}</p>
+    </div>
+  );
+
+  const QuizView = () => {
+    const q = questions[currentQuizIdx];
+    if (!q) return null;
+    const progress = ((currentQuizIdx + 1) / questions.length) * 100;
+    const isLast = currentQuizIdx === questions.length - 1;
+    const hasAnswered = answers[currentQuizIdx] !== undefined;
+
+    return (
+      <div className="flex flex-col h-full animate-in slide-in-from-right duration-500 px-4">
+        <div className="flex flex-col gap-3 mb-10">
+          <div className="flex items-end justify-between px-1">
+            <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em]">Question {currentQuizIdx + 1} of {questions.length}</p>
+            <p className="text-slate-gray text-xs font-black">{Math.round(progress)}%</p>
+          </div>
+          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner">
+            <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }}></div>
+          </div>
+        </div>
+
+        <h2 className="text-[28px] font-black text-slate-gray mb-10 font-display tracking-tight leading-tight">
+          {q.text}
+        </h2>
+
+        <div className="space-y-4 flex-1 overflow-y-auto no-scrollbar">
+          {q.options.map((opt, oIdx) => {
+            const isSelected = answers[currentQuizIdx] === oIdx;
+            return (
+              <button
+                key={oIdx}
+                onClick={() => handleSelectAnswer(currentQuizIdx, oIdx)}
+                className={`w-full text-left p-6 rounded-[28px] border-2 transition-all flex items-center gap-5 active:scale-[0.99] ${
+                  isSelected 
+                    ? 'bg-primary/5 border-primary text-primary shadow-lg shadow-primary/5' 
+                    : 'bg-white border-slate-50 text-slate-600 hover:border-primary/20 shadow-sm'
+                }`}
+              >
+                <div className={`size-10 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 ${
+                  isSelected ? 'bg-primary text-white' : 'bg-slate-50 text-slate-300'
+                }`}>
+                  {String.fromCharCode(65 + oIdx)}
+                </div>
+                <span className="font-bold text-base leading-snug">{opt}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="pt-6 pb-10 flex gap-4">
+          {currentQuizIdx > 0 && (
+            <button 
+              onClick={() => setCurrentQuizIdx(prev => prev - 1)}
+              className="px-8 rounded-[24px] border-2 border-slate-100 text-slate-400 font-black text-sm active:bg-slate-50 transition-all"
+            >
+              Back
+            </button>
+          )}
+          {isLast ? (
+            <button 
+              onClick={handleSubmitQuiz}
+              disabled={!hasAnswered}
+              className={`flex-1 h-16 rounded-[24px] font-black text-lg shadow-xl transition-all flex items-center justify-center gap-3 ${
+                hasAnswered ? 'bg-primary text-white shadow-primary/30 active:scale-[0.98]' : 'bg-slate-100 text-slate-300'
+              }`}
+            >
+              Analyze Compatibility
+              <span className="material-symbols-outlined">analytics</span>
+            </button>
+          ) : (
+             <div className="flex-1 text-center py-5">
+                <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Select an option to proceed</p>
+             </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={`h-full w-full flex flex-col overflow-hidden relative transition-colors duration-500 bg-background-light`}>
+      <header className="sticky top-0 z-50 flex items-center bg-transparent px-6 py-6 justify-between shrink-0">
         <button 
           onClick={onBack}
-          className="text-primary flex size-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors cursor-pointer active:scale-90"
+          className={`flex size-11 items-center justify-center rounded-full border shadow-sm active:scale-90 transition-all bg-white border-slate-100 text-slate-gray`}
         >
-          <span className="material-symbols-outlined">close</span>
+          <span className="material-symbols-outlined font-black">arrow_back</span>
         </button>
-        <h2 className="text-[#101818] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center font-display">Vibe Check</h2>
-        <div className="flex w-12 items-center justify-end">
-        </div>
+        <h1 className={`text-lg font-black font-display tracking-tight text-slate-gray`}>
+          Vibe Check
+        </h1>
+        <div className="size-11"></div>
       </header>
 
-      <main className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-32 relative z-10">
-        {/* Progress Display */}
-        <div className="flex flex-col gap-3 p-6">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-primary text-xs font-bold uppercase tracking-widest">Step {currentQuestionIndex + 1} of {questions.length}</p>
-              <p className="text-[#101818] text-2xl font-bold font-display leading-tight mt-1">Let's find your tribe</p>
-            </div>
-            <p className="text-[#101818] text-sm font-black leading-normal bg-white px-3 py-1 rounded-full shadow-sm">{Math.round(progress)}%</p>
-          </div>
-          <div className="rounded-full bg-gray-200 h-2 w-full overflow-hidden">
-            <div className="h-full rounded-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
-          </div>
-        </div>
-
-        {/* Question Card Container */}
-        <div className="px-6 py-4 animate-in fade-in slide-in-from-bottom-4 duration-500" key={currentQuestion.id}>
-          <div className="bg-white rounded-[32px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-gray-100/50 relative">
-            
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-2xl filled-icon">{currentQuestion.icon}</span>
-                </div>
-                <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">{currentQuestion.dimension}</p>
-              </div>
-              
-              {/* Question card-specific back button on the right */}
-              {currentQuestionIndex > 0 && (
-                <button 
-                  onClick={handlePrevQuestion}
-                  className="size-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 hover:text-primary hover:border-primary/20 transition-all active:scale-90 shadow-sm"
-                  aria-label="Previous question"
-                >
-                  <span className="material-symbols-outlined text-[24px]">arrow_back_ios_new</span>
-                </button>
-              )}
-            </div>
-            
-            <h3 className="text-[#101818] text-2xl font-black font-display leading-tight tracking-tight mb-8">
-              {currentQuestion.question}
-            </h3>
-
-            <div className="flex flex-col gap-3">
-              {currentQuestion.options.map((option) => {
-                const active = isSelected(option);
-                return (
-                  <button 
-                    key={option}
-                    onClick={() => handleOptionSelect(option)}
-                    className={`w-full p-5 rounded-2xl border-2 text-left font-bold text-base transition-all active:scale-[0.98] flex items-center justify-between ${
-                      active 
-                        ? 'border-primary bg-primary/5 text-primary shadow-sm' 
-                        : 'border-slate-50 bg-slate-50/50 text-slate-600 hover:border-primary/20'
-                    }`}
-                  >
-                    <span>{option}</span>
-                    <div className={`size-6 rounded-full border-2 flex items-center justify-center transition-all ${active ? 'bg-primary border-primary' : 'border-slate-200 bg-white'}`}>
-                      {active && <span className="material-symbols-outlined text-white text-[16px] font-black">check</span>}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Tip Banner */}
-        <div className="px-6 py-4 mb-4">
-           <div className="bg-primary/5 rounded-[24px] p-6 border border-primary/10 flex items-start gap-4 shadow-sm">
-             <span className="material-symbols-outlined text-primary text-2xl">auto_awesome</span>
-             <p className="text-xs font-bold text-primary/80 leading-relaxed italic">
-               "We use these answers to match you with a tribe that shares your frequency. Be honest, traveler!"
-             </p>
-           </div>
-        </div>
+      <main className="flex-1 px-8 pt-4 pb-8 overflow-hidden relative z-10">
+        {viewState === 'INTERESTS' && <InterestsView />}
+        {viewState === 'LOADING_QUIZ' && <LoadingView title="Crafting your test..." subtitle="Our RAG engine is generating unique questions based on your facets." />}
+        {viewState === 'QUIZ' && <QuizView />}
+        {viewState === 'LOADING_MATCH' && <LoadingView title="Analyzing resonance..." subtitle="Calculating compatibility scores with active tribe members." />}
+        {viewState === 'RESULTS' && <ResultsView matches={matches} onReset={() => setViewState('INTERESTS')} onJoin={handleJoinRequest} />}
       </main>
 
-      {/* Floating Bottom CTA */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[450px] p-6 bg-gradient-to-t from-background-light via-background-light to-transparent z-50">
-        {isLastQuestion && (
-           <button 
-           onClick={onNext}
-           disabled={!answers[currentQuestion.id]}
-           className={`w-full h-16 rounded-[24px] font-bold text-lg shadow-xl transition-all flex items-center justify-center gap-2 ${
-             answers[currentQuestion.id]
-               ? 'bg-primary text-white shadow-primary/25 active:scale-[0.98]'
-               : 'bg-slate-100 text-slate-300 cursor-not-allowed'
-           }`}
-         >
-           Calculate Vibe Match
-           <span className="material-symbols-outlined">auto_awesome</span>
-         </button>
-        )}
-        
-        {!isLastQuestion && (
-           <div className="flex justify-center">
-             <p className="text-xs font-bold text-slate-300 uppercase tracking-widest bg-white/50 px-4 py-1 rounded-full border border-slate-100">Select an option to advance</p>
-           </div>
-        )}
-        <div className="h-2"></div>
-      </div>
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="w-full max-w-[380px] bg-white rounded-[40px] p-8 pt-12 flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95 duration-400 text-slate-gray">
+            <div className="relative mb-8 shrink-0">
+              <div className="size-24 rounded-full bg-primary/10 flex items-center justify-center relative overflow-hidden">
+                <div className="size-16 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                   <span className="material-symbols-outlined text-white text-4xl font-black">send</span>
+                </div>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight leading-tight font-display">Request Sent!</h3>
+            <p className="text-slate-500 font-bold text-base leading-relaxed mb-10 px-4">
+              We've notified the {destination} group host. You'll hear back within 24 hours.
+            </p>
+
+            <button 
+              onClick={onJoin}
+              className="w-full h-16 bg-primary text-white font-black rounded-[24px] shadow-xl shadow-primary/20 active:scale-[0.97] transition-all text-lg"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

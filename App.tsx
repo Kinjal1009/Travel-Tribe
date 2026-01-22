@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import SplashScreen from './screens/SplashScreen';
 import LandingScreen from './screens/LandingScreen';
@@ -7,7 +6,6 @@ import SignUpStep2Email from './screens/SignUpStep2Email';
 import SignUpStep3Phone from './screens/SignUpStep3Phone';
 import BioSetupScreen from './screens/BioSetupScreen';
 import VibeCheckScreen from './screens/VibeCheckScreen';
-import VibeMatchResultsScreen from './screens/VibeMatchResultsScreen';
 import TrustProfileScreen from './screens/TrustProfileScreen';
 import IdentityVerifyScreen from './screens/IdentityVerifyScreen';
 import FaceMatchScreen from './screens/FaceMatchScreen';
@@ -21,6 +19,7 @@ import NotificationScreen from './screens/NotificationScreen';
 import TripDetailsScreen from './screens/TripDetailsScreen';
 import MyTripsScreen from './screens/MyTripsScreen';
 import CreateTripScreen from './screens/CreateTripScreen';
+import FlightBookingScreen from './screens/FlightBookingScreen';
 import ItineraryScreen from './screens/ItineraryScreen';
 import ChatHubScreen from './screens/ChatHubScreen';
 import GroupChatScreen from './screens/GroupChatScreen';
@@ -48,7 +47,6 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState<any>(null);
   const [selectedRecipient, setSelectedRecipient] = useState<any>(null);
-  const [hasCompletedVibeCheck, setHasCompletedVibeCheck] = useState(false);
   const [showJoinNotification, setShowJoinNotification] = useState(false);
 
   // Verification states
@@ -56,7 +54,6 @@ const App: React.FC = () => {
   const [isVerifiedIdentity, setIsVerifiedIdentity] = useState(false);
   const [isVerifiedSocial, setIsVerifiedSocial] = useState(false);
 
-  // Global trips state
   const [userCreatedTrips, setUserCreatedTrips] = useState<Destination[]>([
     {
       id: 'user-trip-ind-1',
@@ -73,7 +70,6 @@ const App: React.FC = () => {
   ]);
 
   const [bookedTrips, setBookedTrips] = useState<Destination[]>([]);
-
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userBio, setUserBio] = useState<string>('');
   const [userInterests, setUserInterests] = useState<string[]>([]);
@@ -129,6 +125,11 @@ const App: React.FC = () => {
   const navigateTo = (next: ScreenState) => setScreen(next);
   const goToDashboard = () => setScreen('DASHBOARD');
 
+  const handleJoinTribeFlow = () => {
+    setShowJoinNotification(true);
+    goToDashboard();
+  };
+
   const isUserVerified = isVerifiedIdentity && isVerifiedVideo;
 
   if (screen === 'SPLASH') return <SplashScreen />;
@@ -138,18 +139,13 @@ const App: React.FC = () => {
   if (screen === 'SIGNUP_STEP3_PHONE') return <SignUpStep3Phone onBack={() => navigateTo('SIGNUP_STEP1')} onNext={() => navigateTo('SIGNUP_STEP2_EMAIL')} />;
   if (screen === 'SIGNUP_STEP2_EMAIL') return <SignUpStep2Email onBack={() => navigateTo('SIGNUP_STEP3_PHONE')} onNext={() => { setIsLoggedIn(true); setScreen('DASHBOARD'); }} />;
   
-  if (screen === 'VIBE_CHECK') return <VibeCheckScreen onBack={() => setScreen('TRIP_DETAILS')} destination={selectedTrip?.name || 'the destination'} onNext={() => setScreen('VIBE_MATCH_RESULTS')} />;
-
-  if (screen === 'VIBE_MATCH_RESULTS') {
-    return (
-      <VibeMatchResultsScreen 
-        onBack={() => setScreen('VIBE_CHECK')}
-        onJoin={() => { setHasCompletedVibeCheck(true); setShowJoinNotification(true); goToDashboard(); }}
-        onCompleteProfile={() => { setScreen('DASHBOARD'); setActiveTab(AppTab.PROFILE); }}
-        isProfileIncomplete={!isUserVerified}
-      />
-    );
-  }
+  if (screen === 'VIBE_CHECK') return (
+    <VibeCheckScreen 
+      onBack={() => setScreen('TRIP_DETAILS')} 
+      destination={selectedTrip?.name || 'Rishikesh'} 
+      onJoin={handleJoinTribeFlow} 
+    />
+  );
 
   if (screen === 'JOINED_GROUP') return <JoinedGroupScreen onBack={goToDashboard} onJoinChat={() => { setActiveTab(AppTab.CHAT); setScreen('GROUP_CHAT'); }} tripDetails={selectedTrip} />;
 
@@ -199,6 +195,8 @@ const App: React.FC = () => {
       }} 
     />
   );
+
+  if (screen === 'FLIGHT_BOOKING') return <FlightBookingScreen onBack={goToDashboard} />;
 
   if (screen === 'ITINERARY') return <ItineraryScreen onBack={goToDashboard} />;
   
@@ -272,6 +270,7 @@ const App: React.FC = () => {
         return (
           <MyTripsScreen 
             onCreateTrip={() => setScreen('CREATE_TRIP')} 
+            onSearchFlights={() => setScreen('FLIGHT_BOOKING')}
             onItineraryClick={() => setScreen('ITINERARY')} 
             onChatClick={() => setScreen('GROUP_CHAT')} 
             onNotificationClick={() => setScreen('NOTIFICATIONS')} 
