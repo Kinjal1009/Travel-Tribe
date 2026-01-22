@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { FlightSearchResponse } from '../types';
 
-const MCP_SERVER_URL = 'https://google-flights-mcp-addon-production-865a.up.railway.app/';
+const MCP_SERVER_URL = 'https://google-flights-mcp-production-865a.up.railway.app/';
 
 const AIRPORTS: Record<string, string> = {
   'Mumbai': 'BOM', 'Bombay': 'BOM',
